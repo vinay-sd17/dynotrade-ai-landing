@@ -1,1143 +1,1343 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DynoTrade AI - Smart Trading Assistant</title>
-<!--    add favicon-->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(0, 255, 157, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 0, 157, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 80%, rgba(0, 157, 255, 0.1) 0%, transparent 50%);
-            animation: bgShift 8s ease-in-out infinite;
-        }
-
-        @keyframes bgShift {
-            0%, 100% { transform: translateX(0px) translateY(0px); }
-            33% { transform: translateX(30px) translateY(-30px); }
-            66% { transform: translateX(-20px) translateY(20px); }
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            animation: slideDown 0.8s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.5)); }
-            to { filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.8)); }
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .hero-content {
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ffffff, #00ff9d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-
-        .hero .subtitle {
-            font-size: 1.5rem;
-            color: #cccccc;
-            margin-bottom: 30px;
-            font-weight: 300;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            color: #000000;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
-            margin: 0 10px;
-        }
-
-        .download-button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            margin: 0 10px;
-        }
-
-        .download-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 255, 157, 0.5);
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 80px 0;
-            background: rgba(20, 20, 20, 0.9);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            text-align: center;
-        }
-
-        .stat-card {
-            padding: 30px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 255, 157, 0.2);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #00ff9d;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #cccccc;
-            font-size: 1.1rem;
-        }
-
-        /* How It Works Section */
-        .how-it-works {
-            padding: 100px 0;
-            background: rgba(10, 10, 10, 0.9);
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 50px;
-            margin-top: 60px;
-        }
-
-        .step-card {
-            text-align: center;
-            position: relative;
-            padding: 40px 20px;
-        }
-
-        .step-number {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #000;
-            margin: 0 auto 30px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .step-card::before {
-            content: '';
-            position: absolute;
-            top: 40px;
-            left: 50%;
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(180deg, #00ff9d, transparent);
-            transform: translateX(-50%);
-            z-index: 1;
-        }
-
-        .step-card:last-child::before {
-            display: none;
-        }
-
-        .step-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #00ff9d;
-        }
-
-        .step-card p {
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            padding: 100px 0;
-            background: rgba(15, 15, 15, 0.9);
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 255, 157, 0.15);
-        }
-
-        .testimonial-card::before {
-            content: '"';
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-size: 4rem;
-            color: #00ff9d;
-            opacity: 0.3;
-        }
-
-        .testimonial-text {
-            color: #cccccc;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .author-info h4 {
-            color: #ffffff;
-            margin-bottom: 5px;
-        }
-
-        .author-info p {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        /* FAQ Section */
-        .faq {
-            padding: 100px 0;
-            background: rgba(10, 10, 10, 0.9);
-        }
-
-        .faq-container {
-            max-width: 800px;
-            margin: 60px auto 0;
-        }
-
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .faq-item:hover {
-            border-color: #00ff9d;
-        }
-
-        .faq-question {
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.02);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            color: #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        .faq-question:hover {
-            background: rgba(0, 255, 157, 0.1);
-        }
-
-        .faq-answer {
-            padding: 0 25px;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        .faq-item.active .faq-answer {
-            padding: 25px;
-            max-height: 200px;
-        }
-
-        .faq-toggle {
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .faq-item.active .faq-toggle {
-            transform: rotate(45deg);
-        }
-        .features {
-            padding: 100px 0;
-            background: rgba(15, 15, 15, 0.8);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 60px;
-            background: linear-gradient(45deg, #ffffff, #00ff9d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(0, 255, 157, 0.1), rgba(255, 0, 157, 0.1));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 255, 157, 0.2);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #00ff9d;
-        }
-
-        .feature-card p {
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        /* Platforms Section */
-        .platforms {
-            padding: 100px 0;
-            text-align: center;
-        }
-
-        .platforms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-top: 60px;
-        }
-
-        .platform-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .platform-card:nth-child(2) { animation-delay: -2s; }
-        .platform-card:nth-child(3) { animation-delay: -4s; }
-        .platform-card:nth-child(4) { animation-delay: -1s; }
-
-        .platform-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 255, 157, 0.3);
-        }
-
-        /* Pricing Section */
-        .pricing {
-            padding: 100px 0;
-            background: rgba(15, 15, 15, 0.8);
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .pricing-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .pricing-card.featured {
-            border: 2px solid #00ff9d;
-            transform: scale(1.05);
-        }
-
-        .pricing-card.featured::before {
-            content: 'Most Popular';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            color: #000;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 255, 157, 0.2);
-        }
-
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #00ff9d;
-        }
-
-        .price {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .price-period {
-            color: #cccccc;
-            margin-bottom: 30px;
-        }
-
-        .price-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .price-features li {
-            padding: 8px 0;
-            color: #cccccc;
-        }
-
-        .price-features li::before {
-            content: '✓';
-            color: #00ff9d;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .price-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(45deg, #00ff9d, #ff009d);
-            color: #000000;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .price-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 255, 157, 0.4);
-        }
-
-        /* Disclaimer Section */
-        .disclaimer {
-            padding: 80px 0;
-            margin: 60px 0;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .disclaimer h3 {
-            color: #ff6b6b;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-        }
-
-        .disclaimer p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Footer */
-        .footer {
-            padding: 60px 0 40px;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(5, 5, 5, 0.9);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: #cccccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            color: #00ff9d;
-        }
-
-        .footer p {
-            color: #888888;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero .subtitle {
-                font-size: 1.2rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .features-grid,
-            .platforms-grid,
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Scroll animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-animation"></div>
-    
-    <header class="header">
-        <div class="container">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>DynoTrade AI - Smart Trading Assistant</title>
+      <!--    add favicon-->
+      <link rel="icon" href="favicon.ico" type="image/x-icon">
+      <style>
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         }
+         body {
+         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+         background: #0a0a0a;
+         color: #ffffff;
+         overflow-x: hidden;
+         }
+         .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 0 20px;
+         }
+         /* Animated Background */
+         .bg-animation {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         z-index: -1;
+         overflow: hidden;
+         }
+         .bg-animation::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: radial-gradient(circle at 20% 50%, rgba(0, 255, 157, 0.1) 0%, transparent 50%),
+         radial-gradient(circle at 80% 20%, rgba(255, 0, 157, 0.1) 0%, transparent 50%),
+         radial-gradient(circle at 40% 80%, rgba(0, 157, 255, 0.1) 0%, transparent 50%);
+         animation: bgShift 8s ease-in-out infinite;
+         }
+         @keyframes bgShift {
+         0%, 100% { transform: translateX(0px) translateY(0px); }
+         33% { transform: translateX(30px) translateY(-30px); }
+         66% { transform: translateX(-20px) translateY(20px); }
+         }
+         /* Header */
+         .header {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         backdrop-filter: blur(10px);
+         z-index: 1000;
+         padding: 15px 0;
+         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+         animation: slideDown 0.8s ease-out;
+         }
+         @keyframes slideDown {
+         from { transform: translateY(-100%); opacity: 0; }
+         to { transform: translateY(0); opacity: 1; }
+         }
+         .nav {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         }
+         .logo {
+         font-size: 28px;
+         font-weight: bold;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         animation: glow 2s ease-in-out infinite alternate;
+         }
+         @keyframes glow {
+         from { filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.5)); }
+         to { filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.8)); }
+         }
+         .nav-links {
+         display: flex;
+         gap: 30px;
+         list-style: none;
+         }
+         .nav-links a {
+         color: #ffffff;
+         text-decoration: none;
+         font-weight: 500;
+         transition: all 0.3s ease;
+         position: relative;
+         }
+         .nav-links a::after {
+         content: '';
+         position: absolute;
+         bottom: -5px;
+         left: 0;
+         width: 0;
+         height: 2px;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         transition: width 0.3s ease;
+         }
+         .nav-links a:hover::after {
+         width: 100%;
+         }
+         /* Hero Section */
+         .hero {
+         height: 100vh;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         text-align: center;
+         position: relative;
+         }
+         .hero-content {
+         animation: fadeInUp 1s ease-out 0.3s both;
+         }
+         @keyframes fadeInUp {
+         from {
+         opacity: 0;
+         transform: translateY(50px);
+         }
+         to {
+         opacity: 1;
+         transform: translateY(0);
+         }
+         }
+         .hero h1 {
+         font-size: 4rem;
+         font-weight: 800;
+         margin-bottom: 20px;
+         background: linear-gradient(45deg, #ffffff, #00ff9d);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         line-height: 1.2;
+         }
+         .hero .subtitle {
+         font-size: 1.5rem;
+         color: #cccccc;
+         margin-bottom: 30px;
+         font-weight: 300;
+         }
+         .cta-button {
+         display: inline-block;
+         padding: 15px 40px;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         color: #000000;
+         text-decoration: none;
+         border-radius: 50px;
+         font-weight: 700;
+         font-size: 1.1rem;
+         transition: all 0.3s ease;
+         position: relative;
+         overflow: hidden;
+         box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
+         margin: 0 10px;
+         }
+         .download-button {
+         display: inline-block;
+         padding: 15px 40px;
+         background: rgba(255, 255, 255, 0.1);
+         color: #ffffff;
+         text-decoration: none;
+         border-radius: 50px;
+         font-weight: 700;
+         font-size: 1.1rem;
+         transition: all 0.3s ease;
+         position: relative;
+         overflow: hidden;
+         border: 2px solid rgba(255, 255, 255, 0.3);
+         margin: 0 10px;
+         }
+         .download-button:hover {
+         background: rgba(255, 255, 255, 0.2);
+         transform: translateY(-2px);
+         box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+         }
+         .cta-button::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: -100%;
+         width: 100%;
+         height: 100%;
+         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+         transition: left 0.5s ease;
+         }
+         .cta-button:hover::before {
+         left: 100%;
+         }
+         .cta-button:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 15px 40px rgba(0, 255, 157, 0.5);
+         }
+         /* Stats Section */
+         .stats {
+         padding: 80px 0;
+         background: rgba(20, 20, 20, 0.9);
+         border-top: 1px solid rgba(255, 255, 255, 0.1);
+         }
+         .stats-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 40px;
+         text-align: center;
+         }
+         .stat-card {
+         padding: 30px;
+         border-radius: 15px;
+         background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         transition: all 0.3s ease;
+         }
+         .stat-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 15px 30px rgba(0, 255, 157, 0.2);
+         }
+         .stat-number {
+         font-size: 3rem;
+         font-weight: 800;
+         color: #00ff9d;
+         margin-bottom: 10px;
+         }
+         .stat-label {
+         color: #cccccc;
+         font-size: 1.1rem;
+         }
+         /* How It Works Section */
+         .how-it-works {
+         padding: 100px 0;
+         background: rgba(10, 10, 10, 0.9);
+         }
+         .steps-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+         gap: 50px;
+         margin-top: 60px;
+         }
+         .step-card {
+         text-align: center;
+         position: relative;
+         padding: 40px 20px;
+         }
+         .step-number {
+         width: 80px;
+         height: 80px;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 2rem;
+         font-weight: bold;
+         color: #000;
+         margin: 0 auto 30px;
+         position: relative;
+         z-index: 2;
+         }
+         .step-card::before {
+         content: '';
+         position: absolute;
+         top: 40px;
+         left: 50%;
+         width: 2px;
+         height: 100px;
+         background: linear-gradient(180deg, #00ff9d, transparent);
+         transform: translateX(-50%);
+         z-index: 1;
+         }
+         .step-card:last-child::before {
+         display: none;
+         }
+         .step-card h3 {
+         font-size: 1.5rem;
+         margin-bottom: 15px;
+         color: #00ff9d;
+         }
+         .step-card p {
+         color: #cccccc;
+         line-height: 1.6;
+         }
+         /* Testimonials Section */
+         .testimonials {
+         padding: 100px 0;
+         background: rgba(15, 15, 15, 0.9);
+         }
+         .testimonial-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+         gap: 40px;
+         margin-top: 60px;
+         }
+         .testimonial-card {
+         background: rgba(255, 255, 255, 0.05);
+         padding: 40px;
+         border-radius: 20px;
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         position: relative;
+         transition: all 0.3s ease;
+         }
+         .testimonial-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 20px 40px rgba(0, 255, 157, 0.15);
+         }
+         .testimonial-card::before {
+         content: '"';
+         position: absolute;
+         top: 10px;
+         left: 20px;
+         font-size: 4rem;
+         color: #00ff9d;
+         opacity: 0.3;
+         }
+         .testimonial-text {
+         color: #cccccc;
+         line-height: 1.6;
+         margin-bottom: 20px;
+         font-style: italic;
+         }
+         .testimonial-author {
+         display: flex;
+         align-items: center;
+         gap: 15px;
+         }
+         .author-avatar {
+         width: 50px;
+         height: 50px;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         color: #000;
+         font-weight: bold;
+         font-size: 1.2rem;
+         }
+         .author-info h4 {
+         color: #ffffff;
+         margin-bottom: 5px;
+         }
+         .author-info p {
+         color: #888;
+         font-size: 0.9rem;
+         }
+         /* FAQ Section */
+         .faq {
+         padding: 100px 0;
+         background: rgba(10, 10, 10, 0.9);
+         }
+         .faq-container {
+         max-width: 800px;
+         margin: 60px auto 0;
+         }
+         .faq-item {
+         background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         border-radius: 15px;
+         margin-bottom: 20px;
+         overflow: hidden;
+         transition: all 0.3s ease;
+         }
+         .faq-item:hover {
+         border-color: #00ff9d;
+         }
+         .faq-question {
+         padding: 25px;
+         background: rgba(255, 255, 255, 0.02);
+         cursor: pointer;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         font-weight: 600;
+         color: #ffffff;
+         transition: all 0.3s ease;
+         }
+         .faq-question:hover {
+         background: rgba(0, 255, 157, 0.1);
+         }
+         .faq-answer {
+         padding: 0 25px;
+         max-height: 0;
+         overflow: hidden;
+         transition: all 0.3s ease;
+         color: #cccccc;
+         line-height: 1.6;
+         }
+         .faq-item.active .faq-answer {
+         padding: 25px;
+         max-height: 200px;
+         }
+         .faq-toggle {
+         font-size: 1.5rem;
+         transition: transform 0.3s ease;
+         }
+         .faq-item.active .faq-toggle {
+         transform: rotate(45deg);
+         }
+         .features {
+         padding: 100px 0;
+         background: rgba(15, 15, 15, 0.8);
+         }
+         .section-title {
+         text-align: center;
+         font-size: 3rem;
+         font-weight: 700;
+         margin-bottom: 60px;
+         background: linear-gradient(45deg, #ffffff, #00ff9d);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         }
+         .features-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+         gap: 40px;
+         margin-top: 60px;
+         }
+         .feature-card {
+         background: rgba(255, 255, 255, 0.05);
+         padding: 40px;
+         border-radius: 20px;
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         transition: all 0.3s ease;
+         position: relative;
+         overflow: hidden;
+         }
+         .feature-card::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: linear-gradient(45deg, rgba(0, 255, 157, 0.1), rgba(255, 0, 157, 0.1));
+         opacity: 0;
+         transition: opacity 0.3s ease;
+         }
+         .feature-card:hover::before {
+         opacity: 1;
+         }
+         .feature-card:hover {
+         transform: translateY(-10px);
+         box-shadow: 0 20px 40px rgba(0, 255, 157, 0.2);
+         }
+         .feature-icon {
+         font-size: 3rem;
+         margin-bottom: 20px;
+         display: block;
+         }
+         .feature-card h3 {
+         font-size: 1.5rem;
+         margin-bottom: 15px;
+         color: #00ff9d;
+         }
+         .feature-card p {
+         color: #cccccc;
+         line-height: 1.6;
+         }
+         /* Platforms Section */
+         .platforms {
+         padding: 100px 0;
+         text-align: center;
+         }
+         .platforms-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 30px;
+         margin-top: 60px;
+         }
+         .platform-card {
+         background: rgba(255, 255, 255, 0.05);
+         padding: 30px;
+         border-radius: 15px;
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         transition: all 0.3s ease;
+         animation: float 6s ease-in-out infinite;
+         }
+         @keyframes float {
+         0%, 100% { transform: translateY(0px); }
+         50% { transform: translateY(-10px); }
+         }
+         .platform-card:nth-child(2) { animation-delay: -2s; }
+         .platform-card:nth-child(3) { animation-delay: -4s; }
+         .platform-card:nth-child(4) { animation-delay: -1s; }
+         .platform-card:hover {
+         transform: scale(1.05);
+         box-shadow: 0 15px 30px rgba(0, 255, 157, 0.3);
+         }
+         /* Pricing Section */
+         .pricing {
+         padding: 100px 0;
+         background: rgba(15, 15, 15, 0.8);
+         }
+         .pricing-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+         gap: 40px;
+         margin-top: 60px;
+         }
+         .pricing-card {
+         background: rgba(255, 255, 255, 0.05);
+         padding: 40px;
+         border-radius: 20px;
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         text-align: center;
+         position: relative;
+         transition: all 0.3s ease;
+         }
+         .pricing-card.featured {
+         border: 2px solid #00ff9d;
+         transform: scale(1.05);
+         }
+         .pricing-card.featured::before {
+         content: 'Most Popular';
+         position: absolute;
+         top: -15px;
+         left: 50%;
+         transform: translateX(-50%);
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         color: #000;
+         padding: 5px 20px;
+         border-radius: 20px;
+         font-size: 0.9rem;
+         font-weight: 600;
+         }
+         .pricing-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 20px 40px rgba(0, 255, 157, 0.2);
+         }
+         .pricing-card h3 {
+         font-size: 1.5rem;
+         margin-bottom: 20px;
+         color: #00ff9d;
+         }
+         .price {
+         font-size: 3rem;
+         font-weight: 700;
+         margin-bottom: 10px;
+         color: #ffffff;
+         }
+         .price-period {
+         color: #cccccc;
+         margin-bottom: 30px;
+         }
+         .price-features {
+         list-style: none;
+         margin-bottom: 30px;
+         }
+         .price-features li {
+         padding: 8px 0;
+         color: #cccccc;
+         }
+         .price-features li::before {
+         content: '✓';
+         color: #00ff9d;
+         font-weight: bold;
+         margin-right: 10px;
+         }
+         .price-button {
+         display: inline-block;
+         padding: 12px 30px;
+         background: linear-gradient(45deg, #00ff9d, #ff009d);
+         color: #000000;
+         text-decoration: none;
+         border-radius: 25px;
+         font-weight: 600;
+         transition: all 0.3s ease;
+         width: 100%;
+         }
+         .price-button:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 10px 20px rgba(0, 255, 157, 0.4);
+         }
+         /* Disclaimer Section */
+         .disclaimer {
+         padding: 80px 0;
+         margin: 60px 0;
+         border-radius: 20px;
+         text-align: center;
+         }
+         .disclaimer h3 {
+         color: #ff6b6b;
+         margin-bottom: 20px;
+         font-size: 1.8rem;
+         }
+         .disclaimer p {
+         font-size: 1.1rem;
+         line-height: 1.6;
+         max-width: 800px;
+         margin: 0 auto;
+         }
+         /* Footer */
+         .footer {
+         padding: 60px 0 40px;
+         text-align: center;
+         border-top: 1px solid rgba(255, 255, 255, 0.1);
+         background: rgba(5, 5, 5, 0.9);
+         }
+         .footer-links {
+         display: flex;
+         justify-content: center;
+         gap: 30px;
+         margin-bottom: 30px;
+         flex-wrap: wrap;
+         }
+         .footer-links a {
+         color: #cccccc;
+         text-decoration: none;
+         transition: color 0.3s ease;
+         font-weight: 500;
+         }
+         .footer-links a:hover {
+         color: #00ff9d;
+         }
+         .footer p {
+         color: #888888;
+         }
+         /* Responsive */
+         @media (max-width: 768px) {
+         .hero h1 {
+         font-size: 2.5rem;
+         }
+         .hero .subtitle {
+         font-size: 1.2rem;
+         }
+         .nav-links {
+         display: none;
+         }
+         .features-grid,
+         .platforms-grid,
+         .pricing-grid {
+         grid-template-columns: 1fr;
+         }
+         }
+         /* Scroll animations */
+         .fade-in {
+         opacity: 0;
+         transform: translateY(50px);
+         transition: all 0.8s ease;
+         }
+         .fade-in.visible {
+         opacity: 1;
+         transform: translateY(0);
+         }
+         .youtube-videos {
+         padding: 100px 0;
+         background: rgba(10, 10, 10, 0.9);
+         }
+         .videos-carousel {
+         position: relative;
+         max-width: 1200px;
+         margin: 60px auto 0;
+         overflow: hidden;
+         }
+         .carousel-track-container {
+         position: relative;
+         overflow: hidden;
+         border-radius: 20px;
+         }
+         .carousel-track {
+         display: flex;
+         transition: transform 0.5s ease-in-out;
+         }
+         .video-set {
+         display: flex;
+         gap: 30px;
+         min-width: 100%;
+         justify-content: center;
+         opacity: 0;
+         transform: translateX(50px);
+         transition: all 0.5s ease-in-out;
+         }
+         .video-set.active {
+         opacity: 1;
+         transform: translateX(0);
+         }
+         .video-card {
+         flex: 1;
+         max-width: 350px;
+         background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         border-radius: 20px;
+         overflow: hidden;
+         transition: all 0.3s ease;
+         animation: fadeInUp 0.6s ease-out;
+         }
+         .video-card:hover {
+         transform: translateY(-10px);
+         box-shadow: 0 25px 50px rgba(0, 255, 157, 0.2);
+         border-color: rgba(0, 255, 157, 0.3);
+         }
+         .video-card:nth-child(1) { animation-delay: 0.1s; }
+         .video-card:nth-child(2) { animation-delay: 0.2s; }
+         .video-card:nth-child(3) { animation-delay: 0.3s; }
+         .video-thumbnail {
+         position: relative;
+         width: 100%;
+         height: 220px;
+         background: #000;
+         overflow: hidden;
+         }
+         .video-thumbnail iframe {
+         width: 100%;
+         height: 100%;
+         border: none;
+         transition: transform 0.3s ease;
+         }
+         .video-card:hover .video-thumbnail iframe {
+         transform: scale(1.05);
+         }
+         .video-info {
+         padding: 25px;
+         text-align: center;
+         }
+         .video-info h3 {
+         font-size: 1.3rem;
+         margin-bottom: 10px;
+         color: #00ff9d;
+         font-weight: 600;
+         line-height: 1.2;
+         }
+         .video-info p {
+         color: #cccccc;
+         line-height: 1.5;
+         font-size: 0.95rem;
+         }
+         .carousel-controls {
+         position: absolute;
+         top: 50%;
+         transform: translateY(-50%);
+         width: 100%;
+         display: flex;
+         justify-content: space-between;
+         padding: 0 -20px;
+         pointer-events: none;
+         }
+         .carousel-btn {
+         background: rgba(0, 255, 157, 0.9);
+         color: #000;
+         border: none;
+         width: 55px;
+         height: 55px;
+         border-radius: 50%;
+         font-size: 1.8rem;
+         font-weight: bold;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         pointer-events: auto;
+         backdrop-filter: blur(10px);
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         box-shadow: 0 5px 15px rgba(0, 255, 157, 0.3);
+         }
+         .carousel-btn:hover {
+         background: rgba(0, 255, 157, 1);
+         transform: scale(1.1);
+         box-shadow: 0 8px 25px rgba(0, 255, 157, 0.5);
+         }
+         .carousel-btn.prev-btn {
+         left: -25px;
+         }
+         .carousel-btn.next-btn {
+         right: -25px;
+         }
+         .carousel-dots {
+         text-align: center;
+         margin-top: 40px;
+         }
+         .dot {
+         height: 14px;
+         width: 14px;
+         margin: 0 10px;
+         background-color: rgba(255, 255, 255, 0.3);
+         border-radius: 50%;
+         display: inline-block;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         }
+         .dot.active,
+         .dot:hover {
+         background-color: #00ff9d;
+         transform: scale(1.3);
+         box-shadow: 0 0 15px rgba(0, 255, 157, 0.6);
+         }
+         /* Mobile Responsive */
+         @media (max-width: 1024px) {
+         .video-set {
+         gap: 20px;
+         padding: 0 20px;
+         }
+         .video-card {
+         max-width: 300px;
+         }
+         .video-thumbnail {
+         height: 180px;
+         }
+         }
+         @media (max-width: 768px) {
+         .video-set {
+         flex-direction: column;
+         align-items: center;
+         gap: 30px;
+         padding: 0 20px;
+         }
+         .video-card {
+         max-width: 100%;
+         width: 100%;
+         }
+         .video-thumbnail {
+         height: 250px;
+         }
+         .video-info {
+         padding: 20px;
+         }
+         .video-info h3 {
+         font-size: 1.2rem;
+         }
+         .carousel-btn {
+         width: 45px;
+         height: 45px;
+         font-size: 1.4rem;
+         }
+         .carousel-btn.prev-btn {
+         left: 10px;
+         }
+         .carousel-btn.next-btn {
+         right: 10px;
+         }
+         }
+         @media (max-width: 480px) {
+         .video-thumbnail {
+         height: 200px;
+         }
+         .video-info h3 {
+         font-size: 1.1rem;
+         }
+         .video-info p {
+         font-size: 0.9rem;
+         }
+         .carousel-btn {
+         width: 40px;
+         height: 40px;
+         font-size: 1.2rem;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="bg-animation"></div>
+      <header class="header">
+         <div class="container">
             <nav class="nav">
-                <div class="logo">DynoTrade AI</div>
-                <ul class="nav-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#platforms">Platforms</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                </ul>
+               <div class="logo">DynoTrade AI</div>
+               <ul class="nav-links">
+                  <li><a href="#features">Features</a></li>
+                  <li><a href="#how-it-works">How It Works</a></li>
+                  <li><a href="#platforms">Platforms</a></li>
+                  <li><a href="#pricing">Pricing</a></li>
+               </ul>
             </nav>
-        </div>
-    </header>
-
-    <section class="hero">
-        <div class="container">
+         </div>
+      </header>
+      <section class="hero">
+         <div class="container">
             <div class="hero-content">
-                <h1>Smart Trading Analysis<br>In Seconds</h1>
-                <p class="subtitle">LLM-powered trading assistant instantly analyzes charts, stocks, options, and more </p>
-                <div style="margin-top: 30px;">
-                    <a href="#pricing" class="cta-button">Get Started Today</a>
-                    <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb"  class="cta-button" style="background: linear-gradient(45deg, #547668, #ffbde5);">Download from Chrome</a>
-                </div>
+               <h1>Smart Trading Analysis<br>In Seconds</h1>
+               <p class="subtitle">LLM-powered trading assistant instantly analyzes charts, stocks, options, and more </p>
+               <div style="margin-top: 30px;">
+                  <a href="#pricing" class="cta-button">Get Started Today</a>
+                  <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb"  class="cta-button" style="background: linear-gradient(45deg, #547668, #ffbde5);">Download from Chrome</a>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="features fade-in" id="features">
-        <div class="container">
+         </div>
+      </section>
+      <section class="features fade-in" id="features">
+         <div class="container">
             <h2 class="section-title">Powerful Features</h2>
             <div class="features-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">📸</span>
-                    <h3>Snap Analysis</h3>
-                    <p>Take a screenshot of any chart from any platform and get instant technical analysis with support/resistance levels, trend identification, and entry/exit suggestions.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🎤</span>
-                    <h3>Voice Input</h3>
-                    <p>Ask questions about market conditions, specific stocks, or trading strategies through voice commands. Get detailed explanations and market insights instantly.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">📄</span>
-                    <h3>File Analysis</h3>
-                    <p>Upload financial reports, earnings data, or market research files. Our AI analyzes the content and provides key insights and trading implications.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">⚡</span>
-                    <h3>Lightning Fast</h3>
-                    <p>Advanced LLM processing delivers comprehensive analysis in seconds. No waiting, no delays - instant trading insights when you need them.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🎯</span>
-                    <h3>Multi-Asset Support</h3>
-                    <p>Analyze stocks, options, futures, forex, and crypto. Our AI understands different asset classes and provides relevant analysis for each.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔄</span>
-                    <h3>Real-time Updates</h3>
-                    <p>Stay updated with real-time market data integration. Get analysis based on current market conditions and latest price movements.</p>
-                </div>
+               <div class="feature-card">
+                  <span class="feature-icon">📸</span>
+                  <h3>Snap Analysis</h3>
+                  <p>Take a screenshot of any chart from any platform and get instant technical analysis with support/resistance levels, trend identification, and entry/exit suggestions.</p>
+               </div>
+               <div class="feature-card">
+                  <span class="feature-icon">🎤</span>
+                  <h3>Voice Input</h3>
+                  <p>Ask questions about market conditions, specific stocks, or trading strategies through voice commands. Get detailed explanations and market insights instantly.</p>
+               </div>
+               <div class="feature-card">
+                  <span class="feature-icon">📄</span>
+                  <h3>File Analysis</h3>
+                  <p>Upload financial reports, earnings data, or market research files. Our AI analyzes the content and provides key insights and trading implications.</p>
+               </div>
+               <div class="feature-card">
+                  <span class="feature-icon">⚡</span>
+                  <h3>Lightning Fast</h3>
+                  <p>Advanced LLM processing delivers comprehensive analysis in seconds. No waiting, no delays - instant trading insights when you need them.</p>
+               </div>
+               <div class="feature-card">
+                  <span class="feature-icon">🎯</span>
+                  <h3>Multi-Asset Support</h3>
+                  <p>Analyze stocks, options, futures, forex, and crypto. Our AI understands different asset classes and provides relevant analysis for each.</p>
+               </div>
+               <div class="feature-card">
+                  <span class="feature-icon">🔄</span>
+                  <h3>Real-time Updates</h3>
+                  <p>Stay updated with real-time market data integration. Get analysis based on current market conditions and latest price movements.</p>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="how-it-works fade-in" id="how-it-works">
-        <div class="container">
+         </div>
+      </section>
+      <section class="how-it-works fade-in" id="how-it-works">
+         <div class="container">
             <h2 class="section-title">How It Works</h2>
             <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3>Install Extension</h3>
-                    <p>Download and install the DynoTrade AI Chrome extension. It integrates seamlessly with your favorite trading platforms.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3>Capture & Input</h3>
-                    <p>Take a screenshot, upload a file, record audio, or type your trading question. Multiple input methods for maximum flexibility.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3>AI Analysis</h3>
-                    <p>Receive detailed analysis, technical indicators, support/resistance levels, and trading guidance in seconds</p>
-                </div>
+               <div class="step-card">
+                  <div class="step-number">1</div>
+                  <h3>Install Extension</h3>
+                  <p>Download and install the DynoTrade AI Chrome extension. It integrates seamlessly with your favorite trading platforms.</p>
+               </div>
+               <div class="step-card">
+                  <div class="step-number">2</div>
+                  <h3>Capture & Input</h3>
+                  <p>Take a screenshot, upload a file, record audio, or type your trading question. Multiple input methods for maximum flexibility.</p>
+               </div>
+               <div class="step-card">
+                  <div class="step-number">3</div>
+                  <h3>AI Analysis</h3>
+                  <p>Receive detailed analysis, technical indicators, support/resistance levels, and trading guidance in seconds</p>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="platforms fade-in" id="platforms">
-        <div class="container">
+         </div>
+      </section>
+      <section class="platforms fade-in" id="platforms">
+         <div class="container">
             <h2 class="section-title">Supported Platforms</h2>
             <div class="platforms-grid">
-                <div class="platform-card">
-                    <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//dhan.png"  width="50"/>
-                    <br>
-                    <h3>Dhan</h3>
-                </div>
-                <div class="platform-card">
-                    <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//upstox.ico"/>
-                    <br>
-                    <h3>Upstox</h3>
-                </div>
-                <div class="platform-card">
-                    <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//kotak-neo.png" width="50"/>
-                    <br>
-                    <h3>Kotak</h3>
-                </div>
-                <div class="platform-card">
-                    <img src="https://stockapps.com/in/wp-content/uploads/sites/49/2021/01/Zerodha-Kite-App.jpg" width="70"/>
-                    <br>
-                    <h3>Zerodha</h3>
-                </div>
-                <div class="platform-card">
-                    <h3>🚀 Many More</h3>
-                    <br>
-                    <p>Groww <br> IndMoney <br> AngelOne<br> etc</p>
-                </div>
+               <div class="platform-card">
+                  <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//dhan.png"  width="50"/>
+                  <br>
+                  <h3>Dhan</h3>
+               </div>
+               <div class="platform-card">
+                  <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//upstox.ico"/>
+                  <br>
+                  <h3>Upstox</h3>
+               </div>
+               <div class="platform-card">
+                  <img src="https://qxovumdwlwmyqyhdtqyw.supabase.co/storage/v1/object/public/assets//kotak-neo.png" width="50"/>
+                  <br>
+                  <h3>Kotak</h3>
+               </div>
+               <div class="platform-card">
+                  <img src="https://stockapps.com/in/wp-content/uploads/sites/49/2021/01/Zerodha-Kite-App.jpg" width="70"/>
+                  <br>
+                  <h3>Zerodha</h3>
+               </div>
+               <div class="platform-card">
+                  <h3>🚀 Many More</h3>
+                  <br>
+                  <p>Groww <br> IndMoney <br> AngelOne<br> etc</p>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="pricing fade-in" id="pricing">
-        <div class="container">
+         </div>
+      </section>
+      <section class="pricing fade-in" id="pricing">
+         <div class="container">
             <h2 class="section-title">Choose Your Plan</h2>
             <div class="pricing-grid">
-                <div class="pricing-card featured">
-                    <h3>Monthly Subscription</h3>
-                    <div class="price">₹499</div>
-                    <div class="price-period">per month</div>
-                    <ul class="price-features">
-                        <li>100 AI Analysis Searches</li>
-                        <li>All Platform Support</li>
-                        <li>Voice & Text Input</li>
-                        <li>Chart Analysis</li>
-                        <li>File Upload Support</li>
-                        <li>Real-time Market Data</li>
-                        <li>Technical Indicators</li>
-                        <li>24/7 Support</li>
-                    </ul>
-                    <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Subscribe Now</a>
-                </div>
-                <div class="pricing-card">
-                    <h3>Top-up Plan</h3>
-                    <div class="price">₹349</div>
-                    <div class="price-period">100 additional searches</div>
-                    <ul class="price-features">
-                        <li>100 Extra AI Searches</li>
-                        <li>Requires Active Subscription</li>
-                        <li>Same Premium Features</li>
-                        <li>Instant Activation</li>
-                        <li>No Expiry (while subscribed)</li>
-                        <li>Perfect for Heavy Users</li>
-                    </ul>
-                    <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Add 100 Searches</a>
-                </div>
-                <div class="pricing-card">
-                    <h3>Power Top-up</h3>
-                    <div class="price">₹649</div>
-                    <div class="price-period">200 additional searches</div>
-                    <ul class="price-features">
-                        <li>200 Extra AI Searches</li>
-                        <li>Requires Active Subscription</li>
-                        <li>Best Value for Power Users</li>
-                        <li>Instant Activation</li>
-                        <li>No Expiry (while subscribed)</li>
-                        <li>Maximum Flexibility</li>
-                    </ul>
-                    <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Add 200 Searches</a>
-                </div>
+               <div class="pricing-card featured">
+                  <h3>Monthly Subscription</h3>
+                  <div class="price">₹499</div>
+                  <div class="price-period">per month</div>
+                  <ul class="price-features">
+                     <li>100 AI Analysis Searches</li>
+                     <li>All Platform Support</li>
+                     <li>Voice & Text Input</li>
+                     <li>Chart Analysis</li>
+                     <li>File Upload Support</li>
+                     <li>Real-time Market Data</li>
+                     <li>Technical Indicators</li>
+                     <li>24/7 Support</li>
+                  </ul>
+                  <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Subscribe Now</a>
+               </div>
+               <div class="pricing-card">
+                  <h3>Top-up Plan</h3>
+                  <div class="price">₹349</div>
+                  <div class="price-period">100 additional searches</div>
+                  <ul class="price-features">
+                     <li>100 Extra AI Searches</li>
+                     <li>Requires Active Subscription</li>
+                     <li>Same Premium Features</li>
+                     <li>Instant Activation</li>
+                     <li>No Expiry (while subscribed)</li>
+                     <li>Perfect for Heavy Users</li>
+                  </ul>
+                  <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Add 100 Searches</a>
+               </div>
+               <div class="pricing-card">
+                  <h3>Power Top-up</h3>
+                  <div class="price">₹649</div>
+                  <div class="price-period">200 additional searches</div>
+                  <ul class="price-features">
+                     <li>200 Extra AI Searches</li>
+                     <li>Requires Active Subscription</li>
+                     <li>Best Value for Power Users</li>
+                     <li>Instant Activation</li>
+                     <li>No Expiry (while subscribed)</li>
+                     <li>Maximum Flexibility</li>
+                  </ul>
+                  <a target="_blank" href="https://chromewebstore.google.com/detail/dynotrade-ai-trading-assi/kdomlckakjppikbijdhmbfkjeaimkamb" class="price-button">Add 200 Searches</a>
+               </div>
             </div>
-        </div>
-    </section>
-
-<!--    <section class="stats fade-in">-->
-<!--        <div class="container">-->
-<!--            <div class="stats-grid">-->
-<!--                <div class="stat-card">-->
-<!--                    <div class="stat-number">5K+</div>-->
-<!--                    <div class="stat-label">Active Users</div>-->
-<!--                </div>-->
-<!--                <div class="stat-card">-->
-<!--                    <div class="stat-number">50K+</div>-->
-<!--                    <div class="stat-label">Analyses Completed</div>-->
-<!--                </div>-->
-<!--                <div class="stat-card">-->
-<!--                    <div class="stat-number">15+</div>-->
-<!--                    <div class="stat-label">Supported Platforms</div>-->
-<!--                </div>-->
-<!--                <div class="stat-card">-->
-<!--                    <div class="stat-number">2s</div>-->
-<!--                    <div class="stat-label">Average Response Time</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-
-<!--    <section class="testimonials fade-in">-->
-<!--        <div class="container">-->
-<!--            <h2 class="section-title">What Traders Say</h2>-->
-<!--            <div class="testimonial-grid">-->
-<!--                <div class="testimonial-card">-->
-<!--                    <p class="testimonial-text">DynoTrade AI has completely transformed my trading workflow. The instant chart analysis saves me hours of manual technical analysis every day.</p>-->
-<!--                    <div class="testimonial-author">-->
-<!--                        <div class="author-avatar">RK</div>-->
-<!--                        <div class="author-info">-->
-<!--                            <h4>Rahul Kumar</h4>-->
-<!--                            <p>Day Trader</p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="testimonial-card">-->
-<!--                    <p class="testimonial-text">The voice input feature is incredible. I can ask questions while analyzing multiple charts and get instant insights without typing.</p>-->
-<!--                    <div class="testimonial-author">-->
-<!--                        <div class="author-avatar">PS</div>-->
-<!--                        <div class="author-info">-->
-<!--                            <h4>Priya Singh</h4>-->
-<!--                            <p>Swing Trader</p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="testimonial-card">-->
-<!--                    <p class="testimonial-text">As a beginner, DynoTrade AI helps me understand market patterns and make informed decisions. It's like having a trading mentor.</p>-->
-<!--                    <div class="testimonial-author">-->
-<!--                        <div class="author-avatar">AM</div>-->
-<!--                        <div class="author-info">-->
-<!--                            <h4>Arjun Mehta</h4>-->
-<!--                            <p>New Trader</p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-
-    <section class="faq fade-in">
-        <div class="container">
+         </div>
+      </section>
+      <!--    <section class="stats fade-in">-->
+      <!--        <div class="container">-->
+      <!--            <div class="stats-grid">-->
+      <!--                <div class="stat-card">-->
+      <!--                    <div class="stat-number">5K+</div>-->
+      <!--                    <div class="stat-label">Active Users</div>-->
+      <!--                </div>-->
+      <!--                <div class="stat-card">-->
+      <!--                    <div class="stat-number">50K+</div>-->
+      <!--                    <div class="stat-label">Analyses Completed</div>-->
+      <!--                </div>-->
+      <!--                <div class="stat-card">-->
+      <!--                    <div class="stat-number">15+</div>-->
+      <!--                    <div class="stat-label">Supported Platforms</div>-->
+      <!--                </div>-->
+      <!--                <div class="stat-card">-->
+      <!--                    <div class="stat-number">2s</div>-->
+      <!--                    <div class="stat-label">Average Response Time</div>-->
+      <!--                </div>-->
+      <!--            </div>-->
+      <!--        </div>-->
+      <!--    </section>-->
+      <!--    <section class="testimonials fade-in">-->
+      <!--        <div class="container">-->
+      <!--            <h2 class="section-title">What Traders Say</h2>-->
+      <!--            <div class="testimonial-grid">-->
+      <!--                <div class="testimonial-card">-->
+      <!--                    <p class="testimonial-text">DynoTrade AI has completely transformed my trading workflow. The instant chart analysis saves me hours of manual technical analysis every day.</p>-->
+      <!--                    <div class="testimonial-author">-->
+      <!--                        <div class="author-avatar">RK</div>-->
+      <!--                        <div class="author-info">-->
+      <!--                            <h4>Rahul Kumar</h4>-->
+      <!--                            <p>Day Trader</p>-->
+      <!--                        </div>-->
+      <!--                    </div>-->
+      <!--                </div>-->
+      <!--                <div class="testimonial-card">-->
+      <!--                    <p class="testimonial-text">The voice input feature is incredible. I can ask questions while analyzing multiple charts and get instant insights without typing.</p>-->
+      <!--                    <div class="testimonial-author">-->
+      <!--                        <div class="author-avatar">PS</div>-->
+      <!--                        <div class="author-info">-->
+      <!--                            <h4>Priya Singh</h4>-->
+      <!--                            <p>Swing Trader</p>-->
+      <!--                        </div>-->
+      <!--                    </div>-->
+      <!--                </div>-->
+      <!--                <div class="testimonial-card">-->
+      <!--                    <p class="testimonial-text">As a beginner, DynoTrade AI helps me understand market patterns and make informed decisions. It's like having a trading mentor.</p>-->
+      <!--                    <div class="testimonial-author">-->
+      <!--                        <div class="author-avatar">AM</div>-->
+      <!--                        <div class="author-info">-->
+      <!--                            <h4>Arjun Mehta</h4>-->
+      <!--                            <p>New Trader</p>-->
+      <!--                        </div>-->
+      <!--                    </div>-->
+      <!--                </div>-->
+      <!--            </div>-->
+      <!--        </div>-->
+      <!--    </section>-->
+      <section class="youtube-videos fade-in" id="videos">
+         <div class="container">
+            <h2 class="section-title">Watch DynoTrade AI in Action</h2>
+            <div class="videos-carousel">
+               <div class="carousel-track-container">
+                  <div class="carousel-track">
+                     <!-- Set 1 -->
+                     <div class="video-set active">
+                        <div class="video-card">
+                           <div class="video-thumbnail">
+                              <iframe 
+                                 src="https://youtu.be/pvjjzhmnqdk" 
+                                 frameborder="0" 
+                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                 allowfullscreen>
+                              </iframe>
+                           </div>
+                           <div class="video-info">
+                              <h3>Getting Started Guide</h3>
+                              <p>Learn how to install and setup DynoTrade AI extension</p>
+                           </div>
+                        </div>
+                        <div class="video-card">
+                           <div class="video-thumbnail">
+                              <iframe 
+                                 src="https://youtu.be/RxnCBIFVcks" 
+                                 frameborder="0" 
+                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                 allowfullscreen>
+                              </iframe>
+                           </div>
+                           <div class="video-info">
+                              <h3>18 Jul 2025</h3>
+                              <p>Nifty Options Selling Risked Rs. 850 and Rewarded with Rs. 1,350 in 15mins</p>
+                           </div>
+                        </div>
+                        <div class="video-card">
+                           <div class="video-thumbnail">
+                              <iframe 
+                                 src="https://youtu.be/xVnBKkG2zt4" 
+                                 frameborder="0" 
+                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                 allowfullscreen>
+                              </iframe>
+                           </div>
+                           <div class="video-info">
+                              <h3>15 Jul 2025</h3>
+                              <p>Nifty Options Selling Risked Rs. 550 and Rewarded with Rs. 1,125</p>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Set 2 (if you have more videos) -->
+                     <div class="video-set">
+                        <div class="video-card">
+                           <div class="video-thumbnail">
+                              <iframe 
+                                 src="https://youtu.be/pvjjzhmnqdk" 
+                                 frameborder="0" 
+                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                 allowfullscreen>
+                              </iframe>
+                           </div>
+                           <div class="video-info">
+                              <h3>14 Jul 2025</h3>
+                              <p>Nifty Options Selling Risked Rs. 550 and Rewarded with Rs. 1,125</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="carousel-controls">
+                  <button class="carousel-btn prev-btn" onclick="changeVideoSet(-1)">❮</button>
+                  <button class="carousel-btn next-btn" onclick="changeVideoSet(1)">❯</button>
+               </div>
+               <div class="carousel-dots">
+                  <span class="dot active" onclick="currentVideoSet(1)"></span>
+                  <span class="dot" onclick="currentVideoSet(2)"></span>
+               </div>
+            </div>
+         </div>
+      </section>
+      <section class="faq fade-in">
+         <div class="container">
             <h2 class="section-title">Frequently Asked Questions</h2>
             <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How accurate is the AI analysis?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Our AI uses advanced machine learning models trained on vast amounts of market data. While highly accurate for pattern recognition and technical analysis, remember that all trading involves risk and the AI should be used as a tool to support your decision-making, not replace it.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Can I use it on mobile devices?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Currently, DynoTrade AI is available as a Chrome extension for desktop use. We're working on mobile apps for iOS and Android that will be released soon. The extension works perfectly on desktop Chrome browsers.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>What happens if I run out of searches?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>You can purchase top-up plans to add more searches to your account. The 100-search top-up costs ₹349 and the 200-search top-up costs ₹649. Top-ups are only available for active subscribers.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Is my trading data secure?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, we use enterprise-grade encryption and security measures. We don't store your personal trading data or account information. All analysis is processed securely and data is not shared with third parties.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Can I cancel my subscription anytime?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, you can cancel your subscription at any time. You'll continue to have access to the service until the end of your billing period. Any unused searches from your subscription will remain available until expiry.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Does it work with all chart types?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, our AI can analyze candlestick charts, line charts, bar charts, and various technical indicators across all supported platforms. It works with intraday, daily, weekly, and monthly timeframes.</p>
-                    </div>
-                </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>How accurate is the AI analysis?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>Our AI uses advanced machine learning models trained on vast amounts of market data. While highly accurate for pattern recognition and technical analysis, remember that all trading involves risk and the AI should be used as a tool to support your decision-making, not replace it.</p>
+                  </div>
+               </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>Can I use it on mobile devices?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>Currently, DynoTrade AI is available as a Chrome extension for desktop use. We're working on mobile apps for iOS and Android that will be released soon. The extension works perfectly on desktop Chrome browsers.</p>
+                  </div>
+               </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>What happens if I run out of searches?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>You can purchase top-up plans to add more searches to your account. The 100-search top-up costs ₹349 and the 200-search top-up costs ₹649. Top-ups are only available for active subscribers.</p>
+                  </div>
+               </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>Is my trading data secure?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>Yes, we use enterprise-grade encryption and security measures. We don't store your personal trading data or account information. All analysis is processed securely and data is not shared with third parties.</p>
+                  </div>
+               </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>Can I cancel my subscription anytime?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>Yes, you can cancel your subscription at any time. You'll continue to have access to the service until the end of your billing period. Any unused searches from your subscription will remain available until expiry.</p>
+                  </div>
+               </div>
+               <div class="faq-item">
+                  <div class="faq-question">
+                     <span>Does it work with all chart types?</span>
+                     <span class="faq-toggle">+</span>
+                  </div>
+                  <div class="faq-answer">
+                     <p>Yes, our AI can analyze candlestick charts, line charts, bar charts, and various technical indicators across all supported platforms. It works with intraday, daily, weekly, and monthly timeframes.</p>
+                  </div>
+               </div>
             </div>
-        </div>
-    </section>
-
-    <section class="disclaimer fade-in">
-        <div class="container">
+         </div>
+      </section>
+      <section class="disclaimer fade-in">
+         <div class="container">
             <h3>⚠️ Important Disclaimer</h3>
             <p>As per SEBI report, 90% of traders lose money in the stock market. To stay ahead, you need to trade smart. DynoTrade AI helps you analyse charts, stocks, options, etc using advanced LLMs based on your input. <br><br>All trading decisions and outcomes (profit/loss) are your responsibility. Always consult a registered financial advisor before acting on any analysis.</p>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
+         </div>
+      </section>
+      <footer class="footer">
+         <div class="container">
             <p>&copy; 2025 DynoTrade AI, a product of RekSmart Insights Private Limited. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Add random floating particles
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.style.position = 'fixed';
-            particle.style.width = '2px';
-            particle.style.height = '2px';
-            particle.style.background = 'rgba(0, 255, 157, 0.5)';
-            particle.style.borderRadius = '50%';
-            particle.style.pointerEvents = 'none';
-            particle.style.zIndex = '1';
-            
-            particle.style.left = Math.random() * 100 + 'vw';
-            particle.style.top = '100vh';
-            
-            document.body.appendChild(particle);
-            
-            particle.animate([
-                { transform: 'translateY(0px)', opacity: 1 },
-                { transform: 'translateY(-100vh)', opacity: 0 }
-            ], {
-                duration: Math.random() * 3000 + 2000,
-                easing: 'linear'
-            }).onfinish = () => particle.remove();
-        }
-
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const faqItem = question.parentElement;
-                const isActive = faqItem.classList.contains('active');
-
-                // Close all FAQ items
-                document.querySelectorAll('.faq-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                // Toggle current item
-                if (!isActive) {
-                    faqItem.classList.add('active');
-                }
-            });
-        });
-
-        // Create particles periodically
-        setInterval(createParticle, 300);
-    </script>
-</body>
+         </div>
+      </footer>
+      <script>
+         // Smooth scrolling
+         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+             anchor.addEventListener('click', function (e) {
+                 e.preventDefault();
+                 document.querySelector(this.getAttribute('href')).scrollIntoView({
+                     behavior: 'smooth'
+                 });
+             });
+         });
+         
+         // Scroll animations
+         const observerOptions = {
+             threshold: 0.1,
+             rootMargin: '0px 0px -100px 0px'
+         };
+         
+         const observer = new IntersectionObserver((entries) => {
+             entries.forEach(entry => {
+                 if (entry.isIntersecting) {
+                     entry.target.classList.add('visible');
+                 }
+             });
+         }, observerOptions);
+         
+         document.querySelectorAll('.fade-in').forEach(el => {
+             observer.observe(el);
+         });
+         
+         // Add random floating particles
+         function createParticle() {
+             const particle = document.createElement('div');
+             particle.style.position = 'fixed';
+             particle.style.width = '2px';
+             particle.style.height = '2px';
+             particle.style.background = 'rgba(0, 255, 157, 0.5)';
+             particle.style.borderRadius = '50%';
+             particle.style.pointerEvents = 'none';
+             particle.style.zIndex = '1';
+             
+             particle.style.left = Math.random() * 100 + 'vw';
+             particle.style.top = '100vh';
+             
+             document.body.appendChild(particle);
+             
+             particle.animate([
+                 { transform: 'translateY(0px)', opacity: 1 },
+                 { transform: 'translateY(-100vh)', opacity: 0 }
+             ], {
+                 duration: Math.random() * 3000 + 2000,
+                 easing: 'linear'
+             }).onfinish = () => particle.remove();
+         }
+         
+         document.querySelectorAll('.faq-question').forEach(question => {
+             question.addEventListener('click', () => {
+                 const faqItem = question.parentElement;
+                 const isActive = faqItem.classList.contains('active');
+         
+                 // Close all FAQ items
+                 document.querySelectorAll('.faq-item').forEach(item => {
+                     item.classList.remove('active');
+                 });
+         
+                 // Toggle current item
+                 if (!isActive) {
+                     faqItem.classList.add('active');
+                 }
+             });
+         });
+         
+         // Create particles periodically
+         setInterval(createParticle, 300);
+         
+         //       let currentVideoSetIndex = 0;
+         // const videoSets = document.querySelectorAll('.video-set');
+         // const videoDots = document.querySelectorAll('.dot');
+         
+         // function showVideoSet(index) {
+         //     // Hide all video sets
+         //     videoSets.forEach(set => set.classList.remove('active'));
+         //     videoDots.forEach(dot => dot.classList.remove('active'));
+         
+         //     // Show current video set
+         //     videoSets[index].classList.add('active');
+         //     videoDots[index].classList.add('active');
+         // }
+         
+         // function changeVideoSet(direction) {
+         //     currentVideoSetIndex += direction;
+         
+         //     if (currentVideoSetIndex >= videoSets.length) {
+         //         currentVideoSetIndex = 0;
+         //     } else if (currentVideoSetIndex < 0) {
+         //         currentVideoSetIndex = videoSets.length - 1;
+         //     }
+         
+         //     showVideoSet(currentVideoSetIndex);
+         // }
+         
+         // function currentVideoSet(index) {
+         //     currentVideoSetIndex = index - 1;
+         //     showVideoSet(currentVideoSetIndex);
+         // }
+      </script>
+   </body>
 </html>
